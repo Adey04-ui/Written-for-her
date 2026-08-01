@@ -1,0 +1,19 @@
+{
+  "name": "for-her-gift",
+  "version": "1.0.0",
+  "description": "AI-powered romantic gift generator — National Girlfriend's Day",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["romance", "gift", "ai", "love-letter", "girlfriend-day"],
+  "author": "",
+  "license": "MIT"
+}
