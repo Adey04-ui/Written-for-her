@@ -151,8 +151,6 @@ async function createGift(event) {
       huggingface: '⚡ Hugging Face (Free)',
       nlg: '✨ Smart Generator',
     };
-    els.sourceTag.textContent = sourceLabels[data.source] || '✨ AI Generated';
-    els.sourceTag.style.display = 'inline-block';
 
     els.result.classList.add('show');
     els.result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });

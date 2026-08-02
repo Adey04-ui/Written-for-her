@@ -12,6 +12,7 @@ const { buildStoryPage } = require('./lib/buildStory');
 const { saveStory, getStory } = require('./lib/storage');
 
 const app = express();
+require('dotenv').config();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json({ limit: '10mb' }));
