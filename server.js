@@ -1,38 +1,22 @@
 /**
  * For Her Gift — Server
  * 
- * Express backend that:
- * 1. Serves the creator form (static files)
- * 2. Receives story data via POST /api/create
- * 3. Generates personalized letter text using ML
- * 4. Builds a self-contained HTML story page
- * 5. Saves it and returns a shareable URL
+ * Works locally (npm start) AND on Vercel serverless.
+ * Storage: Redis (Upstash) in production, filesystem locally.
  */
 
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
 const { generateLetter } = require('./lib/mlGenerator');
 const { buildStoryPage } = require('./lib/buildStory');
+const { saveStory, getStory } = require('./lib/storage');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Parse JSON bodies (up to 10MB for base64 photos)
 app.use(express.json({ limit: '10mb' }));
-
-// Serve static files from public/
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Ensure stories directory exists
-const STORIES_DIR = path.join(__dirname, 'public', 'stories');
-if (!fs.existsSync(STORIES_DIR)) {
-  fs.mkdirSync(STORIES_DIR, { recursive: true });
-}
-
-/**
- * Convert a name to a URL-safe slug.
- */
 function slugify(name) {
   return (name || 'story')
     .toLowerCase()
@@ -41,22 +25,17 @@ function slugify(name) {
     .slice(0, 30) || 'story';
 }
 
-/**
- * Generate a unique story ID that doesn't collide with existing files.
- */
-function makeId(name) {
+async function makeId(name) {
   const base = slugify(name);
   let id;
+  let attempts = 0;
   do {
     id = `${base}-${Math.random().toString(36).slice(2, 7)}`;
-  } while (fs.existsSync(path.join(STORIES_DIR, `${id}.html`)));
+    attempts++;
+  } while (attempts < 10);
   return id;
 }
 
-/**
- * POST /api/create
- * Receives story data, generates ML letter, builds HTML page, returns URL.
- */
 app.post('/api/create', async (req, res) => {
   try {
     const body = req.body || {};
@@ -66,7 +45,6 @@ app.post('/api/create', async (req, res) => {
       return res.status(400).json({ error: 'Her name is required.' });
     }
 
-    // Parse favorites
     const favsInput = body.favs;
     const favs = Array.isArray(favsInput)
       ? favsInput.map(f => String(f).trim()).filter(Boolean)
@@ -75,7 +53,6 @@ app.post('/api/create', async (req, res) => {
           .map(f => f.trim())
           .filter(Boolean);
 
-    // Build story object
     const story = {
       name: name.slice(0, 60),
       met: (body.met || '').toString().trim().slice(0, 300),
@@ -84,29 +61,26 @@ app.post('/api/create', async (req, res) => {
       vibe: ['dreamy', 'playful', 'elegant'].includes(body.vibe) ? body.vibe : 'dreamy',
       memory: (body.memory || '').toString().trim().slice(0, 500),
       from: (body.from || '').toString().trim().slice(0, 60),
-      photo: (body.photo || '').toString().slice(0, 5_000_000), // 5MB base64 limit
+      photo: (body.photo || '').toString().slice(0, 5_000_000),
     };
 
     console.log(`[CREATE] Generating letter for: ${story.name} (vibe: ${story.vibe})`);
 
-    // Generate letter using ML
     const letterText = await generateLetter(story);
     story.letterText = letterText;
 
     console.log(`[CREATE] Letter generated (${letterText.length} chars)`);
 
-    // Build standalone HTML page
-    const id = makeId(story.name);
+    const id = await makeId(story.name);
     const html = buildStoryPage(story);
-    const filePath = path.join(STORIES_DIR, `${id}.html`);
-    fs.writeFileSync(filePath, html, 'utf8');
+    await saveStory(id, html);
 
-    console.log(`[CREATE] Saved story: ${id}.html`);
+    console.log(`[CREATE] Saved story: ${id}`);
 
     res.json({
       success: true,
       id,
-      url: `/stories/${id}.html`,
+      url: `/stories/${id}`,
       preview: letterText.slice(0, 120) + '...',
     });
   } catch (err) {
@@ -115,25 +89,55 @@ app.post('/api/create', async (req, res) => {
   }
 });
 
-/**
- * GET /api/health
- * Health check endpoint.
- */
+// Serve stories from storage (Redis or filesystem)
+app.get('/stories/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    // Strip .html if user visits the old URL format
+    const cleanId = id.replace(/\.html$/, '');
+    const html = await getStory(cleanId);
+
+    if (!html) {
+      return res.status(404).send(`
+        <!DOCTYPE html>
+        <html><head><title>Not Found</title></head>
+        <body style="font-family:sans-serif;text-align:center;padding:60px;color:#e11d52;">
+          <h1>💔 Story not found</h1>
+          <p>This gift link may have expired or does not exist.</p>
+          <a href="/" style="color:#f43f6a;">Create a new gift</a>
+        </body></html>
+      `);
+    }
+
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(html);
+  } catch (err) {
+    console.error('[SERVE ERROR]', err);
+    res.status(500).send('Something went wrong.');
+  }
+});
+
+// Also support old .html URLs
+app.get('/stories/:id.html', async (req, res) => {
+  const id = req.params.id;
+  const html = await getStory(id);
+  if (!html) return res.status(404).send('Not found');
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(html);
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log('');
-  console.log('  💝 For Her Gift is running!');
-  console.log('  ═══════════════════════════');
-  console.log(`  🌐 Open: http://localhost:${PORT}`);
-  console.log('');
-  console.log('  To create a gift for her:');
-  console.log('  1. Open the URL above in your browser');
-  console.log('  2. Fill in her details');
-  console.log('  3. Click "Create Her Gift"');
-  console.log('  4. Share the generated link!');
-  console.log('');
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log('');
+    console.log('  💝 For Her Gift is running!');
+    console.log('  ═══════════════════════════');
+    console.log(`  🌐 Open: http://localhost:${PORT}`);
+    console.log('');
+  });
+}
+
+module.exports = app;
