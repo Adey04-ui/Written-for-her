@@ -17,7 +17,7 @@
   --deep-shadow: 0 20px 60px rgba(244, 63, 106, 0.2);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body {
   font-family: 'Nunito', sans-serif;
