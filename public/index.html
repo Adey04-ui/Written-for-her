@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#f43f6a">
 <meta property="og:title" content="For Her Gift 💝">
-<meta property="og:description" content="Create a magical, AI-generated love letter for her">
+<meta property="og:description" content="Create a magical, AI-generated letter for any occasion">
 <title>For Her Gift 💝</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -19,14 +19,80 @@
     <div class="header">
       <div class="header-icon">💝</div>
       <h1>Create Her Gift</h1>
-      <p>Fill in her details &mdash; our AI will craft a magical love letter just for her</p>
+      <p>Choose an occasion &mdash; our AI will craft a one-of-a-kind letter</p>
     </div>
 
     <form id="gift-form">
+      <!-- Event Type -->
+      <div class="form-group">
+        <label>Occasion</label>
+        <div class="event-options" id="event-options">
+          <label class="event-option">
+            <input type="radio" name="event" value="girlfriend_day" checked>
+            <div class="event-box">
+              <span class="emoji">💗</span>
+              <span class="label">Girlfriend's Day</span>
+            </div>
+          </label>
+          <label class="event-option">
+            <input type="radio" name="event" value="anniversary">
+            <div class="event-box">
+              <span class="emoji">💍</span>
+              <span class="label">Anniversary</span>
+            </div>
+          </label>
+          <label class="event-option">
+            <input type="radio" name="event" value="birthday">
+            <div class="event-box">
+              <span class="emoji">🎂</span>
+              <span class="label">Birthday</span>
+            </div>
+          </label>
+          <label class="event-option">
+            <input type="radio" name="event" value="valentines">
+            <div class="event-box">
+              <span class="emoji">🌹</span>
+              <span class="label">Valentine's</span>
+            </div>
+          </label>
+          <label class="event-option">
+            <input type="radio" name="event" value="just_because">
+            <div class="event-box">
+              <span class="emoji">💌</span>
+              <span class="label">Just Because</span>
+            </div>
+          </label>
+          <label class="event-option">
+            <input type="radio" name="event" value="miss_you">
+            <div class="event-box">
+              <span class="emoji">🥺</span>
+              <span class="label">Miss You</span>
+            </div>
+          </label>
+          <label class="event-option">
+            <input type="radio" name="event" value="apology">
+            <div class="event-box">
+              <span class="emoji">🙏</span>
+              <span class="label">I'm Sorry</span>
+            </div>
+          </label>
+          <label class="event-option">
+            <input type="radio" name="event" value="proposal">
+            <div class="event-box">
+              <span class="emoji">💎</span>
+              <span class="label">Proposal</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Dynamic follow-up fields (shown/hidden by JS) -->
+      <div id="dynamic-fields"></div>
+
       <!-- Name -->
       <div class="form-group">
         <label for="inp-name">Her Name *</label>
-        <input type="text" id="inp-name" placeholder="e.g. Adeola" maxlength="40" required>
+        <input type="text" id="inp-name" placeholder="e.g. Sarah" maxlength="40" required>
       </div>
 
       <!-- How you met + Special place -->
@@ -53,7 +119,7 @@
         <textarea id="inp-memory" placeholder="e.g. That rainy night when we danced in the kitchen..." maxlength="300"></textarea>
       </div>
 
-      <!-- Vibe selector -->
+      <!-- Vibe -->
       <div class="form-group">
         <label>Vibe</label>
         <div class="vibe-options">
@@ -117,18 +183,19 @@
           <button type="button" id="copy-btn" onclick="copyUrl()">Copy Link</button>
         </div>
         <div class="preview" id="preview-text"></div>
+        <div class="source-tag" id="source-tag"></div>
       </div>
     </form>
   </div>
 
   <div class="footer">
-    Made with love for National Girlfriend's Day 💗
+    Made with love for every occasion 💗
   </div>
 </div>
 
 <script src="app.js"></script>
 <script>
-// Ambient background particles for the creator page
+// Ambient background particles
 const bgCanvas = document.getElementById('bg-particles');
 const bgCtx = bgCanvas.getContext('2d');
 let bgParticles = [];

@@ -4,7 +4,7 @@
   "description": "AI-powered romantic gift generator — National Girlfriend's Day",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "dev": "node server.js"
   },
   "dependencies": {
@@ -22,5 +22,8 @@
     "girlfriend-day"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
 }

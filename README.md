@@ -1,69 +1,248 @@
-# 💝 For Her Gift
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f43f6a">
+<meta property="og:title" content="For Her Gift 💝">
+<meta property="og:description" content="Create a magical, AI-generated letter for any occasion">
+<title>For Her Gift 💝</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-An AI-powered romantic gift generator for National Girlfriend's Day.
+<canvas id="bg-particles"></canvas>
 
-## What it does
+<div class="container">
+  <div class="card">
+    <div class="header">
+      <div class="header-icon">💝</div>
+      <h1>Create Her Gift</h1>
+      <p>Choose an occasion &mdash; our AI will craft a one-of-a-kind letter</p>
+    </div>
 
-1. You fill in details about your girlfriend (name, how you met, favorite things, a memory, photo, vibe)
-2. The backend uses **machine learning** (Hugging Face API) to generate a unique, personalized love letter
-3. If the ML API is unavailable, it falls back to an **advanced combinatorial NLG system** with a large contextual vocabulary — no two letters are ever the same
-4. It generates a **self-contained, shareable HTML page** with the TikTok-style experience:
-   - 🚪 Gate: "Do you want to open it?"
-   - 😢 Rejection loop: Sad character if she says "No ty"
-   - 💌 Envelope: 3D opening animation with heart confetti
-   - 💕 Letter: Her photo, personalized AI-generated text, memory tags
+    <form id="gift-form">
+      <!-- Event Type -->
+      <div class="form-group">
+        <label>Occasion</label>
+        <div class="event-options" id="event-options">
+          <label class="event-option">
+            <input type="radio" name="event" value="girlfriend_day" checked>
+            <div class="event-box">
+              <span class="emoji">💗</span>
+              <span class="label">Girlfriend's Day</span>
+            </div>
+          </label>
+          <label class="event-option">
+            <input type="radio" name="event" value="anniversary">
+            <div class="event-box">
+              <span class="emoji">💍</span>
+              <span class="label">Anniversary</span>
+            </div>
+          </label>
+          <label class="event-option">
+            <input type="radio" name="event" value="birthday">
+            <div class="event-box">
+              <span class="emoji">🎂</span>
+              <span class="label">Birthday</span>
+            </div>
+          </label>
+          <label class="event-option">
+            <input type="radio" name="event" value="valentines">
+            <div class="event-box">
+              <span class="emoji">🌹</span>
+              <span class="label">Valentine's</span>
+            </div>
+          </label>
+          <label class="event-option">
+            <input type="radio" name="event" value="just_because">
+            <div class="event-box">
+              <span class="emoji">💌</span>
+              <span class="label">Just Because</span>
+            </div>
+          </label>
+          <label class="event-option">
+            <input type="radio" name="event" value="miss_you">
+            <div class="event-box">
+              <span class="emoji">🥺</span>
+              <span class="label">Miss You</span>
+            </div>
+          </label>
+          <label class="event-option">
+            <input type="radio" name="event" value="apology">
+            <div class="event-box">
+              <span class="emoji">🙏</span>
+              <span class="label">I'm Sorry</span>
+            </div>
+          </label>
+          <label class="event-option">
+            <input type="radio" name="event" value="proposal">
+            <div class="event-box">
+              <span class="emoji">💎</span>
+              <span class="label">Proposal</span>
+            </div>
+          </label>
+        </div>
+      </div>
 
-## Tech Stack
+      <!-- Dynamic follow-up fields (shown/hidden by JS) -->
+      <div id="dynamic-fields"></div>
 
-- **Backend:** Node.js + Express
-- **ML:** Hugging Face Inference API (Zephyr-7B) with smart algorithmic fallback
-- **Frontend:** Vanilla JavaScript, Canvas 2D (particles + confetti physics), CSS3 (3D transforms, glassmorphism)
-- **Generated pages:** Self-contained HTML (no external dependencies)
+      <!-- Name -->
+      <div class="form-group">
+        <label for="inp-name">Her Name *</label>
+        <input type="text" id="inp-name" placeholder="e.g. Sarah" maxlength="40" required>
+      </div>
 
-## Quick Start
+      <!-- How you met + Special place -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="inp-met">How You Met</label>
+          <input type="text" id="inp-met" placeholder="e.g. At a coffee shop" maxlength="80">
+        </div>
+        <div class="form-group">
+          <label for="inp-place">Special Place</label>
+          <input type="text" id="inp-place" placeholder="e.g. Our favorite park" maxlength="60">
+        </div>
+      </div>
 
-```bash
-# 1. Install dependencies
-npm install
+      <!-- Favorite things -->
+      <div class="form-group">
+        <label for="inp-favs">Her Favorite Things (comma separated)</label>
+        <input type="text" id="inp-favs" placeholder="e.g. Sunsets, iced coffee, Taylor Swift, cats" maxlength="120">
+      </div>
 
-# 2. Start the server
-npm start
+      <!-- Special memory -->
+      <div class="form-group">
+        <label for="inp-memory">A Special Memory</label>
+        <textarea id="inp-memory" placeholder="e.g. That rainy night when we danced in the kitchen..." maxlength="300"></textarea>
+      </div>
 
-# 3. Open http://localhost:3000 in your browser
-```
+      <!-- Vibe -->
+      <div class="form-group">
+        <label>Vibe</label>
+        <div class="vibe-options">
+          <label class="vibe-option">
+            <input type="radio" name="vibe" value="dreamy" checked>
+            <div class="vibe-box">
+              <span class="emoji">✨</span>
+              <span class="label">Dreamy & Soft</span>
+            </div>
+          </label>
+          <label class="vibe-option">
+            <input type="radio" name="vibe" value="playful">
+            <div class="vibe-box">
+              <span class="emoji">🎀</span>
+              <span class="label">Playful & Fun</span>
+            </div>
+          </label>
+          <label class="vibe-option">
+            <input type="radio" name="vibe" value="elegant">
+            <div class="vibe-box">
+              <span class="emoji">🌹</span>
+              <span class="label">Elegant & Cinematic</span>
+            </div>
+          </label>
+        </div>
+      </div>
 
-## Optional: Better ML with API Key
+      <!-- Your name -->
+      <div class="form-group">
+        <label for="inp-from">Your Name</label>
+        <input type="text" id="inp-from" placeholder="e.g. Alex" maxlength="40">
+      </div>
 
-The app works without any API key (uses the smart fallback), but for higher-quality ML generation:
+      <!-- Photo upload -->
+      <div class="form-group">
+        <label>Her Photo</label>
+        <div class="photo-upload" onclick="document.getElementById('inp-photo').click()">
+          <img id="photo-preview" class="photo-preview" alt="Preview">
+          <div id="photo-placeholder" class="photo-placeholder">
+            <div class="icon">📷</div>
+            <div class="text">Tap to upload a photo</div>
+          </div>
+          <input type="file" id="inp-photo" accept="image/*" onchange="handlePhoto(this)">
+        </div>
+      </div>
 
-1. Get a free API key from [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
-2. Set it as an environment variable:
-   ```bash
-   HF_API_KEY=your_key_here npm start
-   ```
+      <!-- Submit -->
+      <button type="submit" class="btn btn-primary" id="submit-btn">
+        <span class="spinner" id="spinner"></span>
+        <span id="btn-text">✨ Create Her Gift</span>
+      </button>
 
-## How to share
+      <!-- Error -->
+      <div class="error-msg" id="error"></div>
 
-After creating a gift, copy the generated URL and send it to her. The link works forever — each story is saved as a standalone HTML file.
+      <!-- Result -->
+      <div class="result" id="result">
+        <h3>Her gift is ready! 💌</h3>
+        <div class="url-box">
+          <input type="text" id="result-url" readonly>
+          <button type="button" id="copy-btn" onclick="copyUrl()">Copy Link</button>
+        </div>
+        <div class="preview" id="preview-text"></div>
+        <div class="source-tag" id="source-tag"></div>
+      </div>
+    </form>
+  </div>
 
-To host publicly:
-- **Free:** Drag the entire project folder to [Netlify Drop](https://app.netlify.com/drop)
-- **Or:** Use Vercel, Railway, Render, or any Node.js host
+  <div class="footer">
+    Made with love for every occasion 💗
+  </div>
+</div>
 
-## File Structure
+<script src="app.js"></script>
+<script>
+// Ambient background particles
+const bgCanvas = document.getElementById('bg-particles');
+const bgCtx = bgCanvas.getContext('2d');
+let bgParticles = [];
 
-```
-for-her-gift/
-├── server.js              # Express server
-├── package.json           # Dependencies
-├── lib/
-│   ├── mlGenerator.js     # ML + smart NLG text generation
-│   └── buildStory.js      # HTML story page builder
-└── public/
-    ├── index.html         # Creator form
-    ├── style.css          # Creator styles
-    ├── app.js             # Creator frontend logic
-    └── stories/           # Generated story pages (auto-created)
-```
+function resizeBg() {
+  bgCanvas.width = window.innerWidth;
+  bgCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeBg);
+resizeBg();
 
-Made with love 💗
+class BgParticle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = bgCanvas.height + Math.random() * 50;
+    this.size = Math.random() * 3 + 1;
+    this.speed = Math.random() * 0.5 + 0.2;
+    this.wobble = Math.random() * Math.PI * 2;
+    this.opacity = Math.random() * 0.3 + 0.1;
+  }
+  update() {
+    this.y -= this.speed;
+    this.wobble += 0.01;
+    this.x += Math.sin(this.wobble) * 0.3;
+    if (this.y < -10) this.reset();
+  }
+  draw() {
+    bgCtx.save();
+    bgCtx.globalAlpha = this.opacity;
+    bgCtx.fillStyle = '#fda4b5';
+    bgCtx.beginPath();
+    bgCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    bgCtx.fill();
+    bgCtx.restore();
+  }
+}
+
+for (let i = 0; i < 30; i++) bgParticles.push(new BgParticle());
+
+function animateBg() {
+  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+  bgParticles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animateBg);
+}
+animateBg();
+</script>
+
+</body>
+</html>

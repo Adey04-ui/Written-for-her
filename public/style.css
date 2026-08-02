@@ -1,6 +1,6 @@
 /**
  * For Her Gift — Creator Styles
- * Soft pink aesthetic with glassmorphism, smooth animations, and responsive design.
+ * Soft pink aesthetic with glassmorphism, smooth animations, responsive design.
  */
 
 :root {
@@ -17,7 +17,7 @@
   --deep-shadow: 0 20px 60px rgba(244, 63, 106, 0.2);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
   font-family: 'Nunito', sans-serif;
@@ -27,7 +27,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Ambient background particles */
 #bg-particles {
   position: fixed;
   top: 0; left: 0;
@@ -36,7 +35,6 @@ body {
   z-index: 0;
 }
 
-/* Main container */
 .container {
   position: relative;
   z-index: 10;
@@ -49,7 +47,6 @@ body {
   justify-content: center;
 }
 
-/* Card */
 .card {
   background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(20px);
@@ -65,7 +62,6 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Header */
 .header {
   text-align: center;
   margin-bottom: 32px;
@@ -95,7 +91,6 @@ body {
   font-size: 0.95rem;
 }
 
-/* Form groups */
 .form-group {
   margin-bottom: 20px;
 }
@@ -142,48 +137,64 @@ body {
   gap: 14px;
 }
 
-/* Photo upload */
-.photo-upload {
-  border: 2px dashed var(--pink-300);
-  border-radius: 16px;
-  padding: 24px;
-  text-align: center;
+/* Event Selector */
+.event-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.event-option {
+  position: relative;
   cursor: pointer;
+}
+
+.event-option input {
+  position: absolute;
+  opacity: 0;
+  width: 0; height: 0;
+}
+
+.event-option .event-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 4px;
+  border: 2px solid var(--pink-200);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.6);
   transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.5);
+  text-align: center;
 }
 
-.photo-upload:hover {
+.event-option .event-box .emoji {
+  font-size: 1.4rem;
+}
+
+.event-option .event-box .label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--pink-600);
+  line-height: 1.2;
+}
+
+.event-option input:checked + .event-box {
   border-color: var(--pink-500);
-  background: rgba(255, 255, 255, 0.8);
+  background: linear-gradient(135deg, var(--pink-100), var(--pink-200));
+  box-shadow: 0 4px 16px rgba(244, 63, 106, 0.15);
 }
 
-.photo-upload input { display: none; }
-
-.photo-preview {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin: 0 auto 10px;
-  border: 3px solid var(--pink-300);
-  display: none;
+.event-option:hover .event-box {
+  border-color: var(--pink-400);
 }
 
-.photo-placeholder {
-  color: var(--rose-gold);
+/* Dynamic fields container */
+#dynamic-fields {
+  transition: opacity 0.3s ease;
 }
 
-.photo-placeholder .icon {
-  font-size: 1.6rem;
-  margin-bottom: 6px;
-}
-
-.photo-placeholder .text {
-  font-size: 0.85rem;
-}
-
-/* Vibe selector */
+/* Vibe Selector */
 .vibe-options {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -234,6 +245,47 @@ body {
   border-color: var(--pink-400);
 }
 
+/* Photo upload */
+.photo-upload {
+  border: 2px dashed var(--pink-300);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.photo-upload:hover {
+  border-color: var(--pink-500);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.photo-upload input { display: none; }
+
+.photo-preview {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 10px;
+  border: 3px solid var(--pink-300);
+  display: none;
+}
+
+.photo-placeholder {
+  color: var(--rose-gold);
+}
+
+.photo-placeholder .icon {
+  font-size: 1.6rem;
+  margin-bottom: 6px;
+}
+
+.photo-placeholder .text {
+  font-size: 0.85rem;
+}
+
 /* Buttons */
 .btn {
   display: inline-flex;
@@ -272,7 +324,7 @@ body {
   transform: none;
 }
 
-/* Result section */
+/* Result */
 .result {
   display: none;
   margin-top: 24px;
@@ -333,9 +385,21 @@ body {
   color: var(--rose-gold);
   font-style: italic;
   margin-top: 8px;
+  line-height: 1.5;
 }
 
-/* Loading spinner */
+.result .source-tag {
+  display: none;
+  margin-top: 10px;
+  padding: 4px 14px;
+  background: linear-gradient(135deg, #e0f2fe, #fce7f3);
+  color: #0369a1;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Spinner */
 .spinner {
   display: none;
   width: 20px;
@@ -350,7 +414,7 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* Error message */
+/* Error */
 .error-msg {
   display: none;
   margin-top: 16px;
@@ -379,6 +443,7 @@ body {
   .container { padding: 24px 16px; }
   .card { padding: 28px 20px; }
   .form-row { grid-template-columns: 1fr; }
+  .event-options { grid-template-columns: repeat(2, 1fr); }
   .vibe-options { grid-template-columns: 1fr; }
   .header h1 { font-size: 1.6rem; }
 }

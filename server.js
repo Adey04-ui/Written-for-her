@@ -27,13 +27,7 @@ function slugify(name) {
 
 async function makeId(name) {
   const base = slugify(name);
-  let id;
-  let attempts = 0;
-  do {
-    id = `${base}-${Math.random().toString(36).slice(2, 7)}`;
-    attempts++;
-  } while (attempts < 10);
-  return id;
+  return `${base}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
 app.post('/api/create', async (req, res) => {
@@ -62,14 +56,19 @@ app.post('/api/create', async (req, res) => {
       memory: (body.memory || '').toString().trim().slice(0, 500),
       from: (body.from || '').toString().trim().slice(0, 60),
       photo: (body.photo || '').toString().slice(0, 5_000_000),
+      // Event-specific fields
+      event: (body.event || 'girlfriend_day').toString().trim(),
+      eventUnit: (body.eventUnit || '').toString().trim(),
+      eventCount: (body.eventCount || '').toString().trim(),
     };
 
-    console.log(`[CREATE] Generating letter for: ${story.name} (vibe: ${story.vibe})`);
+    console.log(`[CREATE] Event: ${story.event} | Name: ${story.name} | Vibe: ${story.vibe}`);
 
-    const letterText = await generateLetter(story);
-    story.letterText = letterText;
+    const result = await generateLetter(story);
+    story.letterText = result.text;
+    story.mlSource = result.source;
 
-    console.log(`[CREATE] Letter generated (${letterText.length} chars)`);
+    console.log(`[CREATE] Generated via ${result.source} (${result.text.length} chars)`);
 
     const id = await makeId(story.name);
     const html = buildStoryPage(story);
@@ -81,7 +80,8 @@ app.post('/api/create', async (req, res) => {
       success: true,
       id,
       url: `/stories/${id}`,
-      preview: letterText.slice(0, 120) + '...',
+      preview: result.text.slice(0, 120) + '...',
+      source: result.source,
     });
   } catch (err) {
     console.error('[CREATE ERROR]', err);
@@ -89,13 +89,10 @@ app.post('/api/create', async (req, res) => {
   }
 });
 
-// Serve stories from storage (Redis or filesystem)
 app.get('/stories/:id', async (req, res) => {
   try {
-    const id = req.params.id;
-    // Strip .html if user visits the old URL format
-    const cleanId = id.replace(/\.html$/, '');
-    const html = await getStory(cleanId);
+    const id = req.params.id.replace(/\.html$/, '');
+    const html = await getStory(id);
 
     if (!html) {
       return res.status(404).send(`
@@ -117,7 +114,6 @@ app.get('/stories/:id', async (req, res) => {
   }
 });
 
-// Also support old .html URLs
 app.get('/stories/:id.html', async (req, res) => {
   const id = req.params.id;
   const html = await getStory(id);
