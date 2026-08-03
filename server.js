@@ -15,6 +15,8 @@ const app = express();
 require('dotenv').config();
 const PORT = process.env.PORT || 3000;
 
+const ADSENSE_CLIENT = process.env.ADSENSE_CLIENT_ID || '';
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -62,6 +64,8 @@ app.post('/api/create', async (req, res) => {
       eventUnit: (body.eventUnit || '').toString().trim(),
       eventCount: (body.eventCount || '').toString().trim(),
     };
+
+    story.adsenseClient = ADSENSE_CLIENT;
 
     console.log(`[CREATE] Event: ${story.event} | Name: ${story.name} | Vibe: ${story.vibe}`);
 
@@ -125,6 +129,19 @@ app.get('/stories/:id.html', async (req, res) => {
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain');
+  res.send(`User-agent: *\nAllow: /\nSitemap: https://written-for-her.vercel.app/sitemap.xml`);
+});
+
+app.get('/sitemap.xml', (req, res) => {
+  res.type('application/xml');
+  res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://written-for-her.vercel.app/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+</urlset>`);
 });
 
 if (!process.env.VERCEL) {
