@@ -1,98 +1,38 @@
-/**
- * Story Builder
- * 
- * Generates a completely self-contained HTML file for each love story.
- * Event-aware: header, greeting, and footer adapt to the occasion.
- */
-
-const EVENT_CONFIG = {
-  'girlfriend_day': { emoji: '💗', greeting: "Happy Girlfriend's Day", footer: "You make every day brighter 💗" },
-  'anniversary': { emoji: '💍', greeting: "Happy Anniversary", footer: "Here's to forever 💍" },
-  'birthday': { emoji: '🎂', greeting: "Happy Birthday", footer: "Make a wish 🎂" },
-  'valentines': { emoji: '🌹', greeting: "Happy Valentine's Day", footer: "Forever yours 🌹" },
-  'just_because': { emoji: '💌', greeting: "Just Because", footer: "Thinking of you 💌" },
-  'miss_you': { emoji: '🥺', greeting: "I Miss You", footer: "Counting the days 🥺" },
-  'apology': { emoji: '🙏', greeting: "I'm Sorry", footer: "From the bottom of my heart 🙏" },
-  'proposal': { emoji: '💎', greeting: "Will You Marry Me?", footer: "Forever starts now 💎" }
-};
-
-function escapeHtml(text) {
-  if (!text) return '';
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
-function getEventConfig(event) {
-  const configs = {
-    girlfriend_day: { emoji: '💗', greeting: "Dear my love (｡♡‿♡｡)", footer: "Happy Girlfriend's Day" },
-    anniversary: { emoji: '💍', greeting: "To my forever (｡♡‿♡｡)", footer: "Happy Anniversary" },
-    birthday: { emoji: '🎂', greeting: "Happy Birthday, my love 🎉", footer: "Happy Birthday" },
-    valentines: { emoji: '🌹', greeting: "My Valentine (｡♡‿♡｡)", footer: "Happy Valentine's Day" },
-    just_because: { emoji: '💌', greeting: "Just for you (｡♡‿♡｡)", footer: "Just Because" },
-    miss_you: { emoji: '🥺', greeting: "I miss you (｡♡‿♡｡)", footer: "Come back soon" },
-    apology: { emoji: '🙏', greeting: "I'm sorry (｡♡‿♡｡)", footer: "Hoping for forgiveness" },
-    proposal: { emoji: '💎', greeting: "My everything (｡♡‿♡｡)", footer: "Will you marry me?" },
-  };
-  return configs[event] || configs.girlfriend_day;
-}
-
-function buildStoryPage(story) {
-  const { name, photo, letterText, vibe, favs, met, place, event, from } = story;
-  const eventConfig = getEventConfig(event);
-
-  const photoHtml = photo
-    ? `<img id="letter-photo" class="letter-photo" src="${photo}" alt="${name}" onerror="this.style.display='none'">`
-    : `<div class="letter-photo-placeholder">${eventConfig.emoji}</div>`;
-
-  const memoryTags = [...(favs || [])];
-  if (place) memoryTags.push(place);
-  if (met) memoryTags.push(`Met at ${met}`);
-
-  const tagsHtml = memoryTags.slice(0, 6).map(tag =>
-    `<span class="memory-tag">${escapeHtml(tag)}</span>`
-  ).join('');
-
-  const signature = from ? escapeHtml(from) : 'Your Love';
-
-  return `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta property="og:title" content="${eventConfig.emoji} A Gift for ${escapeHtml(name)}">
+<meta property="og:title" content="🥺 A Gift for Adeola">
 <meta property="og:description" content="Someone made this just for you...">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#f43f6a">
-<title>${story.event ? EVENT_CONFIG[story.event]?.greeting || 'A Special Letter' : 'A Special Letter'} — ${story.name}</title>
-<meta name="description" content="A personalized ${story.event || 'love'} letter for ${story.name}, written with love by ${story.from}.">
-<meta name="keywords" content="${story.event || 'love'}, letter, ${story.name}, ${story.from}, personalized gift">
-<meta name="author" content="${story.from}">
+<title>I Miss You — Adeola</title>
+<meta name="description" content="A personalized miss_you letter for Adeola, written with love by .">
+<meta name="keywords" content="miss_you, letter, Adeola, , personalized gift">
+<meta name="author" content="">
 
-<meta property="og:title" content="${story.event ? EVENT_CONFIG[story.event]?.greeting || 'A Special Letter' : 'A Special Letter'} — ${story.name}">
-<meta property="og:description" content="A personalized ${story.event || 'love'} letter for ${story.name}, written with love by ${story.from}.">
+<meta property="og:title" content="I Miss You — Adeola">
+<meta property="og:description" content="A personalized miss_you letter for Adeola, written with love by .">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://written-for-her.vercel.app/stories/${story.id || ''}">
-<meta property="og:image" content="${story.photo || 'https://written-for-her.vercel.app/og-default.jpg'}">
+<meta property="og:url" content="https://written-for-her.vercel.app/stories/adeola-3uvah">
+<meta property="og:image" content="https://written-for-her.vercel.app/og-default.jpg">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="${story.event ? EVENT_CONFIG[story.event]?.greeting || 'A Special Letter' : 'A Special Letter'} — ${story.name}">
-<meta name="twitter:description" content="A personalized ${story.event || 'love'} letter for ${story.name}, written with love by ${story.from}.">
-<meta name="twitter:image" content="${story.photo || 'https://written-for-her.vercel.app/og-default.jpg'}">
+<meta name="twitter:title" content="I Miss You — Adeola">
+<meta name="twitter:description" content="A personalized miss_you letter for Adeola, written with love by .">
+<meta name="twitter:image" content="https://written-for-her.vercel.app/og-default.jpg">
 
-<link rel="canonical" href="https://written-for-her.vercel.app/stories/${story.id || ''}">
+<link rel="canonical" href="https://written-for-her.vercel.app/stories/adeola-3uvah">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "CreativeWork",
-  "name": "${story.event ? EVENT_CONFIG[story.event]?.greeting || 'A Special Letter' : 'A Special Letter'} — ${story.name}",
-  "description": "A personalized ${story.event || 'love'} letter for ${story.name}",
-  "author": { "@type": "Person", "name": "${story.from}" },
-  "url": "https://written-for-her.vercel.app/stories/${story.id || ''}"
+  "name": "I Miss You — Adeola",
+  "description": "A personalized miss_you letter for Adeola",
+  "author": { "@type": "Person", "name": "" },
+  "url": "https://written-for-her.vercel.app/stories/adeola-3uvah"
 }
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -185,7 +125,7 @@ function buildStoryPage(story) {
     .envelope-container { width:280px; height:190px; }
   }
 </style>
-${story.adsenseClient ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${story.adsenseClient}" crossorigin="anonymous"></script>` : ''}
+
 </head>
 <body>
 <canvas id="particles"></canvas>
@@ -215,7 +155,7 @@ ${story.adsenseClient ? `<script async src="https://pagead2.googlesyndication.co
     <h2 class="gate-title">Do you want to open it?</h2>
     <p class="gate-subtitle">˚ʚ♡ɞ˚ I prepared this gift for you ˚ʚ♡ɞ˚</p>
     <div class="gate-buttons">
-      <button class="btn-gate btn-open" onclick="openEnvelope()">${eventConfig.emoji} Open it</button>
+      <button class="btn-gate btn-open" onclick="openEnvelope()">🥺 Open it</button>
       <button class="btn-gate btn-ghost" onclick="showReject()">No ty</button>
       <button class="btn-gate btn-ghost" onclick="openEnvelope()" style="font-size:0.85rem">Continue →</button>
     </div>
@@ -241,36 +181,36 @@ ${story.adsenseClient ? `<script async src="https://pagead2.googlesyndication.co
       </svg>
     </div>
     <h2 class="reject-text">Awh... Let's try again.<br>Please? &gt;.&lt;</h2>
-    <button class="btn-again" onclick="showGate()">Again? ${eventConfig.emoji}</button>
+    <button class="btn-again" onclick="showGate()">Again? 🥺</button>
   </div>
 </div>
 
 <div id="envelope-stage">
   <div class="envelope-container" id="envelope">
     <div class="env-back"></div>
-    <div class="env-heart-bg">${eventConfig.emoji}</div>
+    <div class="env-heart-bg">🥺</div>
     <div class="env-front"></div>
     <div class="env-flap"></div>
-    <div class="env-seal">${eventConfig.emoji}</div>
+    <div class="env-seal">🥺</div>
   </div>
 </div>
 
 <div id="letter-stage">
   <div class="letter-card" id="letter-card">
     <div class="letter-header">
-      ${photoHtml}
-      <h2 class="letter-name">${escapeHtml(name)}</h2>
+      <div class="letter-photo-placeholder">🥺</div>
+      <h2 class="letter-name">Adeola</h2>
     </div>
     <div class="letter-body">
-      <div class="letter-dear">${eventConfig.greeting}</div>
-      <p class="letter-text">${escapeHtml(letterText).replace(/\n/g, '<br>')}</p>
-      <div class="letter-memories">${tagsHtml}</div>
+      <div class="letter-dear">I miss you (｡♡‿♡｡)</div>
+      <p class="letter-text">Adeola,<br><br>My days are so much quieter without you here. No matter how busy I keep myself, there is a soft, constant ache in my chest that points straight back to you. I miss the sound of your laugh, the easy way you understand me without a word, and the simple comfort of having you close by. The world just feels a little less bright when we are apart.<br><br>Every time I see something beautiful, my first thought is how much I wish I could share it with you. You are woven into my thoughts, my quiet moments, and my happiest dreams. Distance only makes me realize how deeply you are settled in my heart, and how much sweeter life is when we are together. <br><br>Please know that I am holding you close in my thoughts until I can hold you in my arms again. I miss you more than these simple words can say.<br><br>Your Love</p>
+      <div class="letter-memories"></div>
       <div class="letter-footer">
-        <div class="letter-signature">${signature}</div>
-        <div class="letter-date">${eventConfig.footer} ${eventConfig.emoji}</div>
+        <div class="letter-signature">Your Love</div>
+        <div class="letter-date">Come back soon 🥺</div>
       </div>
       <div class="create-own">
-        <a href="/">${eventConfig.emoji} Create your own gift</a>
+        <a href="/">🥺 Create your own gift</a>
       </div>
     </div>
   </div>
@@ -336,7 +276,4 @@ function animateConfetti() {
 }
 </script>
 </body>
-</html>`;
-}
-
-module.exports = { buildStoryPage };
+</html>

@@ -76,6 +76,7 @@ app.post('/api/create', async (req, res) => {
     console.log(`[CREATE] Generated via ${result.source} (${result.text.length} chars)`);
 
     const id = await makeId(story.name);
+    story.id = id;              
     const html = buildStoryPage(story);
     await saveStory(id, html);
 
