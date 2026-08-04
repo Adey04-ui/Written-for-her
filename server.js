@@ -10,6 +10,7 @@ const path = require('path');
 const { generateLetter } = require('./lib/mlGenerator');
 const { buildStoryPage } = require('./lib/buildStory');
 const { saveStory, getStory } = require('./lib/storage');
+const { uploadBase64Image } = require('./lib/cloudinary');
 
 const app = express();
 require('dotenv').config();
@@ -46,9 +47,9 @@ app.post('/api/create', async (req, res) => {
     const favs = Array.isArray(favsInput)
       ? favsInput.map(f => String(f).trim()).filter(Boolean)
       : String(favsInput || '')
-          .split(',')
-          .map(f => f.trim())
-          .filter(Boolean);
+        .split(',')
+        .map(f => f.trim())
+        .filter(Boolean);
 
     const story = {
       name: name.slice(0, 60),
@@ -67,6 +68,18 @@ app.post('/api/create', async (req, res) => {
 
     story.adsenseClient = ADSENSE_CLIENT;
 
+    if (story.photo && story.photo.startsWith('data:image')) {
+      try {
+        const id = await makeId(story.name);
+        const result = await uploadBase64Image(story.photo, `gift-${id}`);
+        story.photo = result.secure_url;
+        console.log(`[CREATE] Photo uploaded to Cloudinary: ${result.secure_url}`);
+      } catch (err) {
+        console.error('[CREATE] Cloudinary upload failed:', err.message);
+        // Keep base64 as fallback — og:image just won't work for sharing
+      }
+    }
+
     console.log(`[CREATE] Event: ${story.event} | Name: ${story.name} | Vibe: ${story.vibe}`);
 
     const result = await generateLetter(story);
@@ -76,7 +89,7 @@ app.post('/api/create', async (req, res) => {
     console.log(`[CREATE] Generated via ${result.source} (${result.text.length} chars)`);
 
     const id = await makeId(story.name);
-    story.id = id;              
+    story.id = id;
     const html = buildStoryPage(story);
     await saveStory(id, html);
 
